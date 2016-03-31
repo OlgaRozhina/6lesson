@@ -69,15 +69,15 @@ function add_img($path, $save ){
     <html>
 
     <head>
-        <title>Gallery</title>
+        <title>RESIZE</title>
         <meta charset="utf-8">
     </head>
 
     <body>
-        <a href="img/pic1.png"> <img src="img/pic1.png" title="picture png" alt="picture png" width="150px" height="150px"></a>
+        <a href="img/pic1.png"> <img src="img/pic1.png" title="picture png" alt="picture png" width="50px" height="50px"></a>
         <br>
         <br>
-        <a href="img/pic2.gif"> <img src="img/pic2.gif" title="picture gif" alt="picture gif" width="150px" height="150px"></a>
+        <a href="img/pic2.gif"> <img src="img/pic2.gif" title="picture gif" alt="picture gif" width="50px" height="50px"></a>
         <br>
         <br>
 
@@ -85,20 +85,37 @@ function add_img($path, $save ){
         <?php 
          
         
+         
         if(isset($_FILES['myfile'])) {
-             
- 
-             upload($_FILES['myfile']);
-            $fileName = $_FILES['myfile']['name'];//  имя файла   с расширением
-            $path = 'img/'.$fileName;//  путь к картинке, которую будем уменьшать
-            $width = 50; // ширина копии картинки
-            $height = 50;// высота копии картинки 
-            $save ="img/copy"."$fileName"; // путь, в котором будет лежать копия картинки
-            
-            create_thumbnail($path, $save, $width, $height);
-            add_img($path, $save );
-     
-       
+            //  т.к. пока if($_FILES["myfile"]["size"] >1024*2*1024 ) данная проверка размера не работает воспользуемся $_FILES['myfile']['error']
+            // делаем проверку размера файла
+             $sizeError = $_FILES['myfile']['error'];
+         
+             if ($sizeError == 0){ //если ошибки нет то 
+                            
+         //Проверяем ТИП файла перед загрузкой на сервер            
+           $type = $_FILES['myfile']['type'];
+            echo "<br>";
+            switch($type){
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+               // если один из кейсов true , то загружаем фаил и выводи его в галерею в виде ссылки         
+                         upload($_FILES['myfile']);
+                          $fileName = $_FILES['myfile']['name'];//  имя файла   с расширением
+                          $path = 'img/'.$fileName;//  путь к картинке, которую будем уменьшать
+                          $width = 50; // ширина копии картинки
+                          $height = 50;// высота копии картинки 
+                          $save ="img/copy"."$fileName"; // путь, в котором будет лежать копия картинки
+                          
+                          create_thumbnail($path, $save, $width, $height);
+                          add_img($path, $save );
+                    break;
+                default:
+                    echo "Некорректный тип файла";
+                    break;
+            }
+         } else { echo "Размер файла превышает 2 мегабайта";}
 
         }
         else {
