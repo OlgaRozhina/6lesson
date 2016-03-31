@@ -1,21 +1,15 @@
 <?php 
 
 function upload($myfile){
-    
-        if($myfile['name']== '')
-        {
-            echo 'Фаил не выбран';
-            return;
-        }
-        
+            
         if(is_uploaded_file($myfile["tmp_name"])) // Проверяем загружен ли файл
-                           {
-                             // Если файл загружен успешно, перемещаем его из временной директории в конечную
-                             move_uploaded_file($myfile["tmp_name"], "img/".$myfile["name"]);
-                              echo 'Фаил успешно загружен'.'<br>';                 
+             {
+            // Если файл загружен успешно, перемещаем его из временной директории в конечную
+             move_uploaded_file($myfile["tmp_name"], "img/".$myfile["name"]);
+             echo 'Фаил успешно загружен'.'<br>';                 
                            }               
-                        else {
-                              echo("Ошибка загрузки файла");
+        else {
+               echo("Ошибка загрузки файла");
                            }
 }
 
@@ -48,21 +42,44 @@ function add_img($wayToFile){
          
         
         if(isset($_FILES['myfile'])) {
-            
-                     
-
-         upload($_FILES['myfile']);  
-         $wayToFile = 'img/'.$_FILES['myfile']['name'];// вводиv переменную в которой содержится путь к файлу
-         add_img($wayToFile);
+            //  т.к. пока if($_FILES["myfile"]["size"] >1024*2*1024 ) данная проверка размера не работает воспользуемся $_FILES['myfile']['error']
+            // делаем проверку размера файла
+             $sizeError = $_FILES['myfile']['error'];
+         
+             if ($sizeError == 0){ //если ошибки нет то 
+                            
+         //Проверяем ТИП файла перед загрузкой на сервер            
+           $type = $_FILES['myfile']['type'];
+            echo "<br>";
+            switch($type){
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+               // если один из кейсов true , то загружаем фаил и выводи его в галерею в виде ссылки         
+                    upload($_FILES['myfile']);  
+                    $wayToFile = 'img/'.$_FILES['myfile']['name'];// вводиv переменную в которой содержится путь к файлу
+                    add_img($wayToFile);
+                    break;
+                default:
+                    echo "Некорректный тип файла";
+                    break;
+            }
+         } else { echo "Размер файла превышает 2 мегабайта";}
 
         }
         else {
-           //  echo ' пока нет $_FILES[myfile]'; проверка 
-            echo "Выберите фаил для загрузки!";
+         
+            echo "Выберите файл для загрузки!";
+            
         } 
           
         ?>
-        <p> этот параграф чтобы понимать как работает $_FILES
+         <br><br>
+            <form action="" method="post" enctype="multipart/form-data">
+                <input type="file" name="myfile" />
+                <input type="submit" value="Загрузить фаил!">
+            </form>
+<p> этот параграф чтобы понимать как работает $_FILES
         <?php
         
 //            // этот кусок кода мне нужен чтобы понимать что откуда берется
@@ -83,11 +100,6 @@ function add_img($wayToFile){
 
         ?>
            </p>
-            <form action="" method="post" enctype="multipart/form-data">
-                <input type="file" name="myfile" />
-                <input type="submit" value="Загрузить фаил!">
-            </form>
-
 
 
     </body>
