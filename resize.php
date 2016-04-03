@@ -61,6 +61,7 @@ function add_img($path, $save ){
     
     echo '<a href='.$path.'>'.'<img src='.$save.'>'.'</a>';//  выводим картинку на экран в виде ссылки
    
+     
 }
 
 
@@ -106,10 +107,23 @@ function add_img($path, $save ){
                           $path = 'img/'.$fileName;//  путь к картинке, которую будем уменьшать
                           $width = 50; // ширина копии картинки
                           $height = 50;// высота копии картинки 
-                          $save ="img/copy"."$fileName"; // путь, в котором будет лежать копия картинки
-                          
+                          $save ="img/copy/copy"."$fileName"; // путь, в котором будет лежать копия картинки
                           create_thumbnail($path, $save, $width, $height);
-                          add_img($path, $save );
+                    
+                    $dir = scandir ('img/copy/');
+                    unset($dir[0]); // .
+		            unset($dir[1]); // ..
+                    
+                    foreach ($dir as $d){
+                        if($d == '__DS.Store')
+			             continue;
+                            
+                        echo $d;
+                        $save = "img/copy/".$d;// переопределяем $save
+                         add_img($path, $save );
+    
+                        
+                    }
                     break;
                 default:
                     echo "Некорректный тип файла";
